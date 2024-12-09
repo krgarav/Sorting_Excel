@@ -1,5 +1,7 @@
 const multer = require("multer");
 const path = require("path");
+const xlsx = require("xlsx");
+const fs = require("fs");
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -34,4 +36,42 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-module.exports = { upload };
+// Convert Excel to CSV
+const convertExcelToCsv = (filePath, outputDir) => {
+  try {
+    const workbook = xlsx.readFile(filePath);
+    workbook.SheetNames.forEach((sheetName) => {
+      const csvData = xlsx.utils.sheet_to_csv(workbook.Sheets[sheetName]);
+      const outputFileName = path.join(outputDir, `${sheetName}.csv`);
+      fs.writeFileSync(outputFileName, csvData, "utf8");
+      console.log(`Converted ${sheetName} to CSV: ${outputFileName}`);
+    });
+  } catch (error) {
+    console.error("Error converting Excel to CSV:", error.message);
+  }
+};
+
+module.exports = {
+  upload,
+  handleFileConversion: (req, res) => {
+    if (req.file) {
+      const filePath = path.join(__dirname, "uploads", req.file.filename);
+      const outputDir = path.join(__dirname, "uploads/csv");
+
+      // Ensure output directory exists
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+
+      // Check file extension
+      const ext = path.extname(req.file.filename).toLowerCase();
+      if (ext === ".xls" || ext === ".xlsx") {
+        convertExcelToCsv(filePath, outputDir);
+      }
+
+      res.status(200).json({ message: "File uploaded and converted (if needed)." });
+    } else {
+      res.status(400).json({ error: "No file uploaded or invalid file type." });
+    }
+  },
+};

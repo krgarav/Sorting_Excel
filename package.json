@@ -1,8 +1,8 @@
 {
   "name": "sorting_excel",
   "productName": "sorting_excel",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "1.0.1",
+  "description": "Excel Sorting Application",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -20,12 +20,12 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.6.0",
     "@electron-forge/plugin-fuses": "^7.6.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "33.2.1"
+    "electron": "22.0.0"
   },
   "keywords": [],
   "author": {
-    "name": "krgarav",
-    "email": "krgarav@gmail.com"
+    "name": "IOS",
+    "email": "sales@omr.co.in"
   },
   "license": "MIT",
   "dependencies": {
@@ -34,6 +34,20 @@
     "express": "^4.21.2",
     "csv-parser": "^3.0.0",
     "multer": "^1.4.5-lts.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "exceljs": "^4.4.0"
+  },
+  "build": {
+    "productName": "Sorting Excel",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "asar": true
+    },
+    "defaultArch": "ia32",
+    "directories": {
+      "output": "dist"
+    }
   }
 }

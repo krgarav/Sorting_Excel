@@ -45,7 +45,7 @@ const UploadBtn = ({ onChange }) => {
       <input
         className="file"
         onChange={handleData}
-        accept=".csv"
+       accept=".csv,.xls,.xlsx"
         name="text"
         type="file"
       />
