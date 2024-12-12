@@ -45,6 +45,7 @@ const styles = {
     alignItems: "center",
     backgroundColor: "#454545",
     minHeight: "100vh",
+    width: "100vw",
     backgroundImage: "url('/bgcolor.jpg')", // Reference the image in the public folder
     backgroundSize: "cover", // Ensure the image covers the entire background
     backgroundPosition: "center", // Center the image
@@ -104,7 +105,7 @@ function MainPage() {
       const blob = res.data;
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "processed_data.xlsx"; // Set the name of the file to be downloaded
+      link.download = "For_Print.xlsx"; // Set the name of the file to be downloaded
       link.click(); // Trigger download
 
       // Optionally, you can clean up the link element after download

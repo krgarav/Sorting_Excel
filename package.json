@@ -1,7 +1,7 @@
 {
   "name": "sorting_excel",
   "productName": "sorting_excel",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "Excel Sorting Application",
   "main": "src/index.js",
   "scripts": {
@@ -41,7 +41,12 @@
     "productName": "Sorting Excel",
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
       ],
       "asar": true
     },

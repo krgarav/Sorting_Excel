@@ -364,7 +364,7 @@ const uploadFile = (req, res) => {
           }
 
           // Ensure SCHOOL_CODE is always 3 digits (e.g., 001, 023)
-          // school_code = String(school_code).padStart(3, "0");
+          school_code = String(school_code).padStart(3, "0");
 
           // Directly update the current row in data
           row["SL_NO"] = serial_no + "0";

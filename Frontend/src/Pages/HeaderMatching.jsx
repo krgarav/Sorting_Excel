@@ -73,24 +73,13 @@ const HeaderMatching = () => {
       message: "Header mapping is valid.",
     };
   }
-  // console.log(state);
   // Handle change event for each select
   const handleCsvHeaderChange = (key, value) => {
-    // Check if the value is already present in uploadedHeader
-    // if (!uploadedHeader.includes(value)) {
-    //   setUploadedHeader((prev) => [...prev, value]); // Add the value if not present
-    // }
-
     // Update selected headers
     setSelectedHeaders((prev) => ({
       ...prev,
       [key]: value, // Update only the relevant key
     }));
-
-    // Remove any previous selection of this key if changed
-    // setUploadedHeader((prev) =>
-    //   prev.filter((item) => item != value)
-    // );
   };
 
   const submitHandler = async () => {
@@ -115,7 +104,7 @@ const HeaderMatching = () => {
       const blob = response.data;
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "processed_data.xlsx"; // Set the name of the file to be downloaded
+      link.download = "For_Print.xlsx"; // Set the name of the file to be downloaded
       link.click(); // Trigger download
 
       // Optionally, you can clean up the link element after download
@@ -147,7 +136,7 @@ const HeaderMatching = () => {
   return (
     <div>
       <div
-        className="min-h-[100dvh] overflow-y-auto overflow-x-auto flex justify-center items-center templatemapping pt-10 pb-5 bg-cover bg-center bg-no-repeat"
+        className="min-h-[100dvh] overflow-y-auto overflow-x-auto flex flex-col justify-center items-center templatemapping pt-10 pb-5 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/bgcolor.jpg')" }}
       >
         <div className="w-[900px] bg-white p-6 rounded-lg shadow-md relative">
@@ -226,6 +215,24 @@ const HeaderMatching = () => {
           </div>
         </div>
         <ToastContainer />
+        <button
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#007BFF",
+            border: "none",
+            borderRadius: "5px",
+            color: "white",
+            fontSize: "16px",
+            cursor: "pointer",
+            marginTop: "10px",
+            // width: "100%",
+          }}
+          onClick={() => {
+            navigate("/", { replace: "true" });
+          }}
+        >
+          Return to home
+        </button>
       </div>
     </div>
   );
