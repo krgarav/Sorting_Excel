@@ -238,7 +238,7 @@ const uploadFile = (req, res) => {
     };
 
     const generateExcel = async (data) => {
-      // const targetDirectory = path.join(__dirname, "../result");
+      // Ensure target directory exists
       if (!fs.existsSync(targetDirectory)) {
         fs.mkdirSync(targetDirectory, { recursive: true });
       }
@@ -258,7 +258,7 @@ const uploadFile = (req, res) => {
         { header: "ROLL_NO", key: "ROLL_NO", width: 10 },
         { header: "NAME", key: "NAME", width: 20 },
         { header: "FATHER_NAME", key: "FATHER_NAME", width: 20 },
-        { header: "CLASS", key: "CLASS_CODE", width: 10 },
+        { header: "CLASS", key: "CLASS_CODE", width: 10 }, // CLASS as text
         { header: "SECTION", key: "SECTION", width: 10 },
         { header: "SCHOOL", key: "SCHOOL", width: 20 },
         { header: "TEHSIL", key: "TEHSIL", width: 15 },
@@ -273,6 +273,7 @@ const uploadFile = (req, res) => {
 
       worksheet.columns = headers;
 
+      // Apply header styles
       worksheet.getRow(1).eachCell((cell) => {
         cell.fill = {
           type: "pattern",
@@ -283,8 +284,13 @@ const uploadFile = (req, res) => {
         cell.alignment = { horizontal: "center" };
       });
 
+      // Add rows and enforce text type for CLASS_CODE
       data.forEach((row) => {
-        worksheet.addRow(row);
+        const newRow = worksheet.addRow(row);
+
+        // Force CLASS_CODE column to be treated as text
+        newRow.getCell("CLASS_CODE").value = String(row.CLASS_CODE); // Convert to string
+        newRow.getCell("CLASS_CODE").numFmt = "@"; // Set as text explicitly
       });
 
       await workbook.xlsx.writeFile(excelFilePath);
@@ -298,6 +304,7 @@ const uploadFile = (req, res) => {
         }
       });
     };
+
     const filePath = filePaths + req.file.filename;
     const fileExtension = path.extname(req.file.filename).toLowerCase();
     const parsedData = [];
@@ -372,11 +379,14 @@ const uploadFile = (req, res) => {
           row["50 OR LESS"] = fiftyMarks;
           row["51-80"] = fiftyToEightyMarks;
           row["81+"] = moreThanEightyMarks;
-          row["DISTRICT"] = district;
-          row["STATE"] = state;
-          row["YEAR"] = year;
-          row["CLASS_CODE"] = class_code;
-          row["SCHOOL_CODE"] = school_code;
+          row["DISTRICT"] = district.toUpperCase();
+          row["STATE"] = state.toUpperCase();
+          row["YEAR"] = year.toString().toUpperCase();
+          row["NAME"] = name.toUpperCase();
+          row["FATHER_NAME"] = fatherName.toUpperCase();
+          row["SECTION"] = section.toUpperCase();
+          row["SCHOOL"] = school.toUpperCase();
+          row["TEHSIL"] = tehsil.toUpperCase();
         } catch (error) {
           console.error(`Error processing row: ${error.message}`);
         }
@@ -446,6 +456,8 @@ const uploadFile = (req, res) => {
         item.HEADER = `${item.SCHOOL_CODE}/${count}`;
         count++;
         prevHeader = item.SCHOOL_CODE;
+        // Convert CLASS_CODE to string after sorting
+        item.CLASS_CODE = String(item.CLASS_CODE).toUpperCase();
       });
 
       // Clean up unnecessary fields (TOTAL_MARKS, SCHOOL_CODE)
