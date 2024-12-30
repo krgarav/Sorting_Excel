@@ -67,6 +67,7 @@ const NamingExcel = () => {
   const [directoryPath, setDirectoryPath] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [show, setShow] = useState(false);
+  const [sheetName, setSheetName] = useState(0);
   const [message, setMessage] = useState("");
   const location = useLocation();
   const handleClose = () => setShow(false);
@@ -138,6 +139,7 @@ const NamingExcel = () => {
 
       const formData = new FormData();
       formData.append("excelFile", file);
+      formData.append("sheetName", sheetName);
 
       const res = await axios.post(
         "http://localhost:7000/upload/uploadandProcessData",
@@ -189,8 +191,46 @@ const NamingExcel = () => {
               handleFileChange(data);
             }}
           />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              margin: "10px 0",
+              padding: "10px",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            <label
+              style={{
+                fontSize: "14px",
+                fontWeight: "bold",
+                color: "#333",
+              }}
+            >
+              Enter sheet name
+            </label>
+            <input
+              type="text"
+              style={{
+                padding: "8px",
+                fontSize: "14px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              value={sheetName}
+              onChange={(event) => {
+                setSheetName(event.target.value);
+              }}
+            />
+            <small>Leave blank for default sheet name</small>
+          </div>
 
-          <br />
           <button
             type="button"
             onClick={handleUpload}

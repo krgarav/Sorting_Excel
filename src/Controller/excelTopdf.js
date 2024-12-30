@@ -20,14 +20,14 @@ const convertExcelToPDF = (req, res) => {
 
   // Create a new jsPDF instance
   const pdf = new jsPDF({
-    orientation: "portrait", // Portrait orientation
+    orientation: "landscape", // Portrait orientation
     unit: "pt",
     format: "letter", // Letter size (8.5 x 11 inches)
   });
 
   // Add a title to the PDF
   pdf.setFontSize(12);
-//   pdf.text("Converted Excel Data", 40, 40);
+  //   pdf.text("Converted Excel Data", 40, 40);
 
   // Ensure jsonData has at least one row
   if (jsonData.length === 0) {
@@ -56,14 +56,20 @@ const convertExcelToPDF = (req, res) => {
       .status(400)
       .json({ message: "Invalid headers in the Excel file" });
   }
-
+  // console.log(dataRows);
   // Ensure that rows are not empty
   if (dataRows.length === 0) {
     return res
       .status(400)
       .json({ message: "No data rows found in the Excel file" });
   }
-
+  dataRows.forEach((item) => {
+    if (item[2].length > 100) {
+      // Truncate to 100 characters and add ellipsis
+      item[2] = item[2].substring(0, 100) + "...";
+    }
+  });
+  console.log(dataRows);
   // Use jsPDF-AutoTable to generate a table
   pdf.autoTable({
     head: [headers], // Use manually defined headers

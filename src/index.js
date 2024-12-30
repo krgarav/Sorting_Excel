@@ -42,6 +42,7 @@ const createWindow = () => {
   mainWindow.setMenu(null);
   // Load the frontend through the Express server
   mainWindow.loadURL(`http://localhost:${PORT}`);
+  // mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron is ready

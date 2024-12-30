@@ -10,24 +10,56 @@ const nameChange = (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    const parseExcelFile = (filePath) => {
-      const workbook = xlsx.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const rows = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
-        defval: "",
-      });
 
-      // Capture headers from the first row
-      if (rows.length > 0) {
-        csvHeaders = Object.keys(rows[0]);
+    const parseExcelFile = (filePath, sheetName = null) => {
+      try {
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at ${filePath}`);
+        }
+
+        const workbook = xlsx.readFile(filePath);
+
+        if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+          throw new Error("The Excel file contains no sheets.");
+        }
+
+        // If no sheetName is provided, use the first sheet
+        const selectedSheetName = sheetName  || workbook.SheetNames[0];
+
+        if (!workbook.SheetNames.includes(selectedSheetName)) {
+          throw new Error(
+            `Sheet '${selectedSheetName}' does not exist in the file.`
+          );
+        }
+
+        const rows = xlsx.utils.sheet_to_json(
+          workbook.Sheets[selectedSheetName],
+          {
+            defval: "",
+            raw: true, // Preserves original data types
+          }
+        );
+
+        if (rows.length === 0) {
+          throw new Error(`The sheet '${selectedSheetName}' contains no data.`);
+        }
+
+        // Capture headers from the first row
+        const csvHeaders = Object.keys(rows[0]);
+        console.log("Headers:", csvHeaders);
+
+        return rows;
+      } catch (error) {
+        console.error("Error parsing Excel file:", error.message);
+        return [];
       }
-
-      return rows;
     };
+
     const generateExcel = async (data) => {
       if (!fs.existsSync(targetDirectory)) {
         fs.mkdirSync(targetDirectory, { recursive: true });
       }
+      console.log(data[0]);
       // Check if data is empty or undefined
       if (!data || data.length === 0) {
         return res.status(400).json({
@@ -37,7 +69,7 @@ const nameChange = (req, res) => {
       }
 
       // Check if data[0] has the necessary properties
-      if (!data[0].CITY_NAME || !data[0].STATE_NAME) {
+      if (data[0].CITY_NAME == null || data[0].STATE_NAME == null) {
         return res.status(400).json({
           success: false,
           message: "Missing required information (CITY_NAME or STATE_NAME).",
@@ -148,8 +180,8 @@ const nameChange = (req, res) => {
           const district = row["CITY_NAME"];
           const state = row["STATE_NAME"];
           const year = row["YEAR"];
-          const totalMarks = parseInt(row["TOTAL_MARKS"] || 0);
-
+          const totalMarks = parseInt(row["TOTAL_MARKS"]);
+          console.log(serial_no, name);
           // Check if any required field is missing or undefined
           if (
             typeof name === "undefined" ||
@@ -248,7 +280,10 @@ const nameChange = (req, res) => {
         });
     } else if (fileExtension === ".xls" || fileExtension === ".xlsx") {
       try {
-        const data = parseExcelFile(filePath);
+        // console.log(filePath)
+        const data = parseExcelFile(filePath, req.body.sheetName);
+        // console.log(data);
+        // console.log(data);
         generateExcel(processParsedData(data));
       } catch (error) {
         if (!res.headersSent) {
